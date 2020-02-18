@@ -3,6 +3,6 @@
 namespace Microsoft.FSharp
 open System.Reflection
 
-[<assembly:AssemblyInformationalVersion("4.5.0.0.  Commit Hash: 9bdd20360757480a21e89be80b8f0051a8f8a2b1.")>]
+[<assembly:AssemblyInformationalVersion("4.5.0.0.  Commit Hash: 26c3228402cadbfe92aa13c6bb0c323830767754.")>]
 do()
 
