@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (c) Microsoft Corporation.  All Rights Reserved.  See License.txt in the project root for license information. -->
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
   <PropertyGroup>
     <FSharpSourcesRoot>$(MSBuildProjectDirectory)\..\..</FSharpSourcesRoot>
     <ProjectLanguage>FSharp</ProjectLanguage>
     <BuildWith Condition=" '$(Configuration)' == 'Proto' ">LKG</BuildWith>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
+
   <Import Project="$(FSharpSourcesRoot)\FSharpSource.Settings.targets" />
+
   <PropertyGroup>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{DED3BBD7-53F4-428A-8C9F-27968E768605}</ProjectGuid>
@@ -25,38 +28,20 @@
     <OtherFlags>$(OtherFlags) --warnon:1182 --compiling-fslib --maxerrors:20 --extraoptimizationloops:1</OtherFlags>
     <OtherFlags Condition="'$(TargetDotnetProfile)' == 'net40'">$(OtherFlags) --compiling-fslib-40</OtherFlags>
   </PropertyGroup>
+
   <!-- Nuget packaging configuration -->
-  <!-- References -->
-  <Import Project="$(FSharpSourcesRoot)\.nuget\NuGet.targets" Condition="Exists('$(FSharpSourcesRoot)\.nuget\NuGet.targets')" />
-  <Import Project="$(FSharpSourcesRoot)\FSharpSource.targets" />
-  <!-- Hook compilation phase to do custom work -->
-  <!-- NOTE: The optdata and sigdata files are no longer needed by the F# compiler (the information is -->
-  <!-- integrated as resources into more recent FSharp.Core.dll's. However they are still produced to -->
-  <!-- allow older versions of the F# compiler to reference more recent FSharp.Core packages -->
-  <Target Name="CopyToBuiltBin" BeforeTargets="AfterCompile" AfterTargets="CoreCompile">
-    <ItemGroup>
-      <BuiltProjectOutputGroupKeyOutput Include="$(IntermediateOutputPath)\FSharp.Core.sigdata" />
-      <BuiltProjectOutputGroupKeyOutput Include="$(IntermediateOutputPath)\FSharp.Core.optdata" />
-    </ItemGroup>
-    <Copy SourceFiles="$(IntermediateOutputPath)\FSharp.Core.sigdata" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="$(IntermediateOutputPath)\FSharp.Core.optdata" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
-  </Target>
-  <Target Name="nugetpack" DependsOnTargets="CreateOrUpdateBuildVersionFile" AfterTargets="Build" Condition="'$(TargetDotnetProfile)' == 'coreclr' " Inputs="@(PackageNuspec)" Outputs="$(FSharpSourcesRoot)\..\$(Configuration)\artifacts\&quot;%(PackageNuspec.Filename)).nupkg">
-    <PropertyGroup>
-      <PackageProperties>-prop "licenseUrl=$(PackageLicenceUrl)" -prop "version=$(FSharpCoreFrozenPortablePackageVersion)" -prop "authors=$(PackageAuthors)" -prop "projectUrl=$(PackageProjectUrl)" -prop "tags=$(PackageTags)"</PackageProperties>
-    </PropertyGroup>
-    <MakeDir Directories="$(FSharpSourcesRoot)\..\artifacts" />
-    <SetEnvVar Name="NUGET_PACKAGES" Value="$(NUGET_PACKAGES)" />
-    <Exec Command="$(FSharpSourcesRoot)\..\.nuget\nuget.exe pack @(PackageNuspec) -BasePath $(OutputPath.TrimEnd(&quot;\&quot;)) -ExcludeEmptyDirectories $(PackageProperties) -OutputDirectory $(FSharpSourcesRoot)\..\artifacts" />
-  </Target>
   <ItemGroup>
     <PackageNuspec Include="Testing.FSharp.Core.nuspec" Condition="'$(TargetDotnetProfile)' == 'coreclr'" />
-    <None Include="FSharp.Core.runtimeconfig.json" Condition="'$(TargetDotnetProfile)' == 'coreclr'">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="FSharp.Core.runtimeconfig.json"      Condition="'$(TargetDotnetProfile)' == 'coreclr'" ><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' != 'Proto'">
     <CustomAdditionalCompileInputs Include="$(FSharpSourcesRoot)\..\Proto\$(ProtoFlavour)\bin\fsc.exe">
       <Visible>false</Visible>
     </CustomAdditionalCompileInputs>
+  </ItemGroup>
+
+  <ItemGroup>
     <CompileBefore Include="prim-types-prelude.fsi">
       <Link>Primitives/prim-types-prelude.fsi</Link>
     </CompileBefore>
@@ -267,13 +252,51 @@
     <Compile Include="fslib-extra-pervasives.fs">
       <Link>Extras/fslib-extra-pervasives.fs</Link>
     </Compile>
-    <None Include="project.json" />
   </ItemGroup>
-  <ItemGroup>
+
+  <ItemGroup Condition="'$(TargetDotnetProfile)' != 'coreclr'">
     <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="System.Numerics">
       <Private>false</Private>
     </Reference>
   </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetDotnetProfile)' == 'coreclr'">
+    <None Include="project.json" />
+  </ItemGroup>
+
+  <!-- References -->
+  <Import Project="$(FSharpSourcesRoot)\.nuget\NuGet.targets" Condition="Exists('$(FSharpSourcesRoot)\.nuget\NuGet.targets')" />
+  <Import Project="$(FSharpSourcesRoot)\FSharpSource.targets" />
+
+  <!-- Hook compilation phase to do custom work -->
+  <!-- NOTE: The optdata and sigdata files are no longer needed by the F# compiler (the information is -->
+  <!-- integrated as resources into more recent FSharp.Core.dll's. However they are still produced to -->
+  <!-- allow older versions of the F# compiler to reference more recent FSharp.Core packages -->
+  <Target Name="CopyToBuiltBin" BeforeTargets="AfterCompile" AfterTargets="CoreCompile" >
+    <ItemGroup>
+      <BuiltProjectOutputGroupKeyOutput Include="$(IntermediateOutputPath)\FSharp.Core.sigdata" />
+      <BuiltProjectOutputGroupKeyOutput Include="$(IntermediateOutputPath)\FSharp.Core.optdata" />
+    </ItemGroup>
+    <Copy SourceFiles="$(IntermediateOutputPath)\FSharp.Core.sigdata" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(IntermediateOutputPath)\FSharp.Core.optdata" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="nugetpack"
+          DependsOnTargets="CreateOrUpdateBuildVersionFile"
+          AfterTargets="Build"
+          Condition="'$(TargetDotnetProfile)' == 'coreclr' "
+          Inputs="@(PackageNuspec)" 
+          Outputs='$(FSharpSourcesRoot)\..\$(Configuration)\artifacts\"%(PackageNuspec.Filename)).nupkg'>
+
+    <PropertyGroup>
+      <PackageProperties>-prop "licenseUrl=$(PackageLicenceUrl)" -prop "version=$(FSharpCoreFrozenPortablePackageVersion)" -prop "authors=$(PackageAuthors)" -prop "projectUrl=$(PackageProjectUrl)" -prop "tags=$(PackageTags)"</PackageProperties>
+    </PropertyGroup>
+
+    <MakeDir Directories="$(FSharpSourcesRoot)\..\artifacts" />
+    <SetEnvVar Name="NUGET_PACKAGES" Value="$(NUGET_PACKAGES)" />
+    <Exec Command='$(FSharpSourcesRoot)\..\.nuget\nuget.exe pack @(PackageNuspec) -BasePath $(OutputPath.TrimEnd("\")) -ExcludeEmptyDirectories $(PackageProperties) -OutputDirectory $(FSharpSourcesRoot)\..\artifacts' />
+  </Target>
+
 </Project>
