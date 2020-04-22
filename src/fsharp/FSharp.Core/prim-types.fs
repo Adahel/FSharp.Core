@@ -2989,6 +2989,29 @@ namespace Microsoft.FSharp.Core
 
     and 'T voption = ValueOption<'T>
 
+namespace System.Collections.Generic
+
+open Microsoft.FSharp.Core
+
+type IReadOnlyCollection<'T> =
+    inherit IEnumerable<'T>
+
+    abstract Count : int with get
+
+type IReadOnlyDictionary<'TKey, 'TValue> =
+    inherit IReadOnlyCollection<KeyValuePair<'TKey, 'TValue>>
+
+    abstract Keys : IEnumerable<'TKey> with get
+    abstract Values : IEnumerable<'TValue> with get
+    abstract Item : key : 'TKey -> 'TValue with get
+    abstract ContainsKey : key : 'TKey -> bool
+    abstract TryGetValue : key : 'TKey * [<System.Runtime.InteropServices.Out>] value : byref<'TValue> -> bool
+
+type IReadOnlyList<'T> =
+    inherit IReadOnlyCollection<'T>
+
+    abstract Item : index : int -> 'T with get
+
 namespace Microsoft.FSharp.Collections
 
     //-------------------------------------------------------------------------

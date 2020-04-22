@@ -4,7 +4,8 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
+    <!-- net45;netstandard2.0 -->
+    <TargetFrameworks>net40</TargetFrameworks>
     <TargetFrameworks Condition="'$(OS)' == 'Unix'">netstandard2.0</TargetFrameworks>
     <NoWarn>$(NoWarn);45;55;62;75;1204</NoWarn>
     <AllowCrossTargeting>true</AllowCrossTargeting>
@@ -17,7 +18,7 @@
 
   <ItemGroup>
     <EmbeddedResource Update="FSCore.resx">
-      <GenerateSource>true</GenerateSource>
+      <GenerateSource>false</GenerateSource>
       <GenerateLegacyCode>true</GenerateLegacyCode>
       <GenerateLiterals>false</GenerateLiterals>
       <GeneratedModuleName>Microsoft.FSharp.Core.SR</GeneratedModuleName>
@@ -29,6 +30,12 @@
     <CompileBefore Include="prim-types-prelude.fs">
       <Link>Primitives/prim-types-prelude.fs</Link>
     </CompileBefore>
+    <Compile Include="assemblyinfo.fs">
+      <Link>Primitives/assemblyinfo.fs</Link>
+    </Compile>
+    <Compile Include="FSCore.fs">
+      <Link>Primitives/FSCore.fs</Link>
+    </Compile>
     <Compile Include="prim-types.fsi">
       <Link>Primitives/prim-types.fsi</Link>
     </Compile>
@@ -113,6 +120,12 @@
     <Compile Include="set.fs">
       <Link>Collections/set.fs</Link>
     </Compile>
+    <Compile Include="readonlydictionary.fsi">
+      <Link>Collections/readonlydictionary.fsi</Link>
+    </Compile>
+    <Compile Include="readonlydictionary.fs">
+      <Link>Collections/readonlydictionary.fs</Link>
+    </Compile>
     <Compile Include="reflect.fsi">
       <Link>Reflection/reflect.fsi</Link>
     </Compile>
@@ -154,6 +167,9 @@
     </Compile>
     <Compile Include="event.fs">
       <Link>Control/event.fs</Link>
+    </Compile>
+    <Compile Include="exceptionservicescommon.fs">
+      <Link>Control\exceptionservicescommon.fs</Link>
     </Compile>
     <Compile Include="async.fsi">
       <Link>Control/async.fsi</Link>
@@ -208,7 +224,7 @@
     </Compile>
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <PackageReference Include="System.Linq.Queryable" Version="$(SystemLinqQueryableVersion)" />
     <PackageReference Include="System.Net.Requests" Version="$(SystemNetRequestsVersion)" />
     <PackageReference Include="System.Threading.Tasks.Parallel" Version="$(SystemThreadingTasksParallelVersion)" />

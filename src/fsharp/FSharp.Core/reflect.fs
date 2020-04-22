@@ -672,7 +672,7 @@ type UnionCaseInfo(typ: System.Type, tag: int) =
         getMethInfo().GetCustomAttributes(attributeType, false)
 
     member __.GetCustomAttributesData() =
-        getMethInfo().CustomAttributes |> Seq.toArray :> IList<_>
+        getMethInfo().GetCustomAttributesData() |> Seq.toArray :> IList<_>
 
     member __.Tag = tag
 

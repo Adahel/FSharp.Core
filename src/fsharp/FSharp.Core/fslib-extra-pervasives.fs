@@ -89,7 +89,7 @@ module ExtraTopLevelOperators =
                 | true, value ->
                     r <- value
                     true
-            member __.Values = (t :> IReadOnlyDictionary<_,_>).Values
+            member __.Values = (new ReadOnlyDictionary<_,_>(t) :> IReadOnlyDictionary<_,_>).Values
             member __.ContainsKey k = t.ContainsKey (makeSafeKey k)
 
         interface ICollection<KeyValuePair<'Key, 'T>> with 
