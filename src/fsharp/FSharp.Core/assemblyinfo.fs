@@ -10,7 +10,7 @@ open System.Resources
 #else
 [<assembly: AssemblyConfiguration("Release")>]
 #endif
-[<assembly: AssemblyCopyright("<#='\u00A9'#> Microsoft Corporation.  All Rights Reserved.")>]
+[<assembly: AssemblyCopyright("\x00a9 Microsoft Corporation.  All Rights Reserved.")>]
 [<assembly: AssemblyFileVersion("4.700.20.10408")>]
 [<assembly: AssemblyInformationalVersion("4.7.0-beta.20104.8+8cc87f0fb0b7244e44e6bcbd514365ac41482e19")>]
 [<assembly: AssemblyProduct("FSharp.Core")>]
