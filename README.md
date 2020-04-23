@@ -1,3 +1,7 @@
+# Third Party Notice
+
+FSharp.Core .NET Framework 4.0 version includes code from Theraot.Core under MIT License.
+
 # The F# compiler, F# core library, and F# editor tools
 
 You're invited to contribute to future releases of the F# compiler, core library, and tools. Development of this repository can be done on any OS supported by [.NET Core](https://dotnet.microsoft.com/).
