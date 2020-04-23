@@ -1,3 +1,7 @@
+# Third Party Notice
+
+FSharp.Core .NET Framework 4.0 version includes code from Theraot.Core under MIT License.
+
 # The F# Language, Library, and  Visual F# Tools Repository
 
 You are invited to help produce future releases of the F# language compiler, library, and tools. This repository enables development on Linux, macOS and Windows, along with some automated CI testing for these.
